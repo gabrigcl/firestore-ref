@@ -1,4 +1,4 @@
-concatRefPath(ref, pathElms) {
+export const concatRefPath = function(ref, pathElms) {
     let ref_ = ref;
     let rest;
     if (pathElms.length > 0) {
@@ -22,19 +22,6 @@ concatRefPath(ref, pathElms) {
         }
     }
     return ref_;
-}
+};
 
-ref(ref, path = null) {
-    let ref_;
-    if (typeof ref === 'string') {
-        ref_ = this.concatRefPath(null, ref.split('/'));
-    } else {
-        ref_ = ref;
-    }
-    if (path) {
-        if (typeof path === 'string') {
-            ref_ = this.concatRefPath(ref_, path.split('/'));
-        }
-    }
-    return ref_;
-}
+export {concatRefPath};
