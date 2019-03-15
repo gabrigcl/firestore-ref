@@ -1,5 +1,5 @@
 
-import {concatRefPath} from './concat-refpath';
+import { concatRefPath } from './concat-refpath';
 
 /**
  * Transforms a firestore reference path string "collection/doc/..." into a firestore reference object
@@ -10,8 +10,8 @@ import {concatRefPath} from './concat-refpath';
  * @param {String} path a path string in format "collection/doc/..."
  * @returns a firestore reference resulted from the concatenation and transformation of ref and path arguments
  */
-const ref = function(firestore, ref, path = null) {
-    let ref_;
+var ref = function(firestore, ref, path) {
+    var ref_;
     if (typeof ref === 'string') {
         ref_ = concatRefPath(firestore, null, ref.split('/'));
     } else {
