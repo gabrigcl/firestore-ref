@@ -1,11 +1,21 @@
 {
   "name": "firestore-ref",
   "version": "0.0.1",
-  "description": "",
+  "description": "Create firebase's firestore document/collection deep references with 'URL like' path",
   "main": "ref.js",
   "scripts": {
-    "test": "test"
+    "test": "luna ./test/test.js --no-coverage -v"
   },
   "author": "Gabriel Castro",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "luna-testing": "^1.3.2",
+    "rollup": "^1.6.0"
+  },
+  "peerDependencies": {
+    "firebase": "^5.9.0"
+  },
+  "dependencies": {
+    "firebase": "^5.9.0"
+  }
 }
