@@ -2,7 +2,7 @@ import banner from 'rollup-plugin-banner';
 import { uglify } from "rollup-plugin-uglify";
 
 export default {
-  input: './src/ref.js',
+  input: './src/index.js',
   output: [
     {
         file: './build/firestore-ref.min.js',

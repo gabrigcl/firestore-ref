@@ -3,26 +3,25 @@ import { concatRefPath } from './concat-refpath';
 
 /**
  * Transforms a firestore reference path string "collection/doc/..." into a firestore reference object
- * or concatenates a prevously created reference with an inner reference in a path string format.
- * If "ref" first argument is evaluated as false, "path" second argument should init with
+ * or concatenates a prevously created reference with an inner reference writen as a path string format.
+ * If "reference" argument is evaluated as false, "refPath" argument should init with
  * "collection" and refers to a top level collection. Ex: somecollection/somedoc/innercollection.
- * @param {Object} ref firestore reference previously created or a path string in format "collection/doc/..."
- * @param {String} path a path string in format "collection/doc/..."
+ * @param {Object} firestore firestore application object e.g: db = firebase().firestore()
+ * @param {Object} reference firestore reference previously created or a path string in format "collection/doc/..."
+ * @param {String} refPath a path string in format "collection/doc/..."
  * @returns a firestore reference resulted from the concatenation and transformation of ref and path arguments
  */
-var ref = function(firestore, ref, path) {
+export var ref = function(firestore, reference, refPath) {
     var ref_;
-    if (typeof ref === 'string') {
-        ref_ = concatRefPath(firestore, null, ref.split('/'));
+    if (typeof reference === 'string') {
+        ref_ = concatRefPath(firestore, null, reference.split('/'));
     } else {
-        ref_ = ref;
+        (reference.collection || reference.doc) ? ref_ = reference : ref_ = null;
     }
-    if (path) {
-        if (typeof path === 'string') {
-            ref_ = concatRefPath(firestore, ref_, path.split('/'));
+    if (refPath) {
+        if (typeof refPath === 'string') {
+            ref_ = concatRefPath(firestore, ref_, refPath.split('/'));
         }
     }
     return ref_;
 };
-
-export {ref};
