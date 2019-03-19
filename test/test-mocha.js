@@ -140,8 +140,12 @@ describe('#firestoreRef', function() {
     });
     context('only first argument invalid', function() {
         it('should return a valid firestore reference if second argument is a valid reference string', function() {
-            expect(ref({a: 'a', b: 'b'}, 'collectionfoo').doc).to.be.true;
-            expect(ref({a: 'a', b: 'b'}, 'collectionfoo/docbar').collection).to.be.true;
+            const libResult1 = ref({a: 'a', b: 'b'}, 'collectionfoo');
+            const expectedResult1 = firestore.collection('collectionfoo');
+            expect(libResult1).to.eql(expectedResult1);
+            const libResult2 = ref({a: 'a', b: 'b'}, 'collectionfoo/docbar');
+            const expectedResult2 = firestore.collection('collectionfoo/docbar');
+            expect(libResult2).to.eql(expectedResult2);
             expect(ref(null, 'collectionfoo/docbar').collection).to.be.true;
         });
     });
