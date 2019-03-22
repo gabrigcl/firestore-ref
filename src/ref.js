@@ -14,13 +14,13 @@ import { concatRefPath } from './concat-refpath';
 export var ref = function(firestore, reference, refPath) {
     var ref_;
     if (typeof reference === 'string') {
-        ref_ = concatRefPath(firestore, null, reference.split('/'));
+        ref_ = concatRefPath(firestore, null, reference);
     } else {
-        (reference.collection || reference.doc) ? ref_ = reference : ref_ = null;
+        ((reference) && (reference.collection || reference.doc)) ? ref_ = reference : ref_ = null;
     }
     if (refPath) {
         if (typeof refPath === 'string') {
-            ref_ = concatRefPath(firestore, ref_, refPath.split('/'));
+            ref_ = concatRefPath(firestore, ref_, refPath);
         }
     }
     return ref_;

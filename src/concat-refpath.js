@@ -8,8 +8,9 @@
  * @param {Array} pathElms array of firestore path segments (parsed from a string in format "collection/doc/collection/...")
  * @returns a firestore reference resulted from the concatenation of ref and pathElms arguments
  */
-var concatRefPath = function(firestore, ref, pathElms) {
+var concatRefPath = function(firestore, ref, path) {
     var ref_ = ref;
+    var pathElms = / /.test(path); 
     var rest;
     if (pathElms.length > 0) {
         if (ref_) {
