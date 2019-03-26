@@ -1,6 +1,8 @@
 import { expect, should as shd } from 'chai';
+
+import { validatePath } from '../src/validate-path';
 import { concatRefPath } from '../src/concat-refpath';
-import { firestoreRef } from '../src/index.js';
+import { firestoreRef } from '../src/index';
 
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -20,74 +22,90 @@ const firestore = firebase.initializeApp(config).firestore();
 
 /* UNIT TESTS */
 
-// describe('#concatRefPath', function() {
+describe('#validatePath', function() {
+    context('test regex against Firestore collection and documents name conventions', function() {
+        it('should return false from invalid strings', function() {
+            expect(validatePath('')).to.be.false;
+            expect(validatePath('/')).to.be.false;
+            expect(validatePath('/acollection')).to.be.false;
+            expect(validatePath('acollection/')).to.be.false;
+            expect(validatePath('acollection//adoc')).to.be.false;
+        });
+        it('should return true from valid strings', function() {
+            expect(validatePath('acollection')).to.be.true;
+            expect(validatePath('acollection/5dy2QgnUQY27JRTHY5xP')).to.be.true;
+            expect(validatePath('acollection/5dy2QgnUQY27JRTHY5xP/0R9vos3I3UL2djGjqVPB')).to.be.true;
+        });
+    });
+});
 
-//     context('test only referece path parser', function() {
-//         it('should return a correct reference object', function() {
-//             expect(
-//                 concatRefPath(
-//                     firestore, 
-//                     null, 
-//                     ['toplevelcollection']
-//                 )
-//             ).to.eql(firestore.collection('toplevelcollection'));
-//             expect(
-//                 concatRefPath(
-//                     firestore, 
-//                     null, 
-//                     ['toplevelcollection', 'somedoc']
-//                 )
-//             ).to.eql(firestore.collection('toplevelcollection').doc('somedoc'));
-//         });
-//     });
+describe('#concatRefPath', function() {
+
+    context('test only referece path parser', function() {
+        it('should return a correct reference object', function() {
+            expect(
+                concatRefPath(
+                    firestore, 
+                    null, 
+                    'toplevelcollection'
+                )
+            ).to.eql(firestore.collection('toplevelcollection'));
+            expect(
+                concatRefPath(
+                    firestore, 
+                    null, 
+                    'toplevelcollection/somedoc/subcollection'
+                )
+            ).to.eql(firestore.collection('toplevelcollection').doc('somedoc').collection('subcollection'));
+        });
+    });
     
-//     context('with a firestore reference passed as first argument, deep references', function() {
-//         const someCollection = firestore.collection('somecollection');
-//         const someDoc = firestore.collection('somecollection').doc('someDoc');
-        
-//         it('should return the original reference passed unchanged, if a reference path is not passed to concatenate', function() {
-//             expect(
-//                 concatRefPath(
-//                     firestore, 
-//                     someCollection, 
-//                     []
-//                 )
-//             ).to.eql(someCollection);
-//         });
+    context('with a firestore reference passed as first argument and deeper references', function() {
+        const someCollection = firestore.collection('somecollection');
+        const someDoc = firestore.collection('somecollection').doc('someDoc');
 
-//         it('should return a correct reference object', function() {
-//             expect(
-//                 concatRefPath(
-//                     firestore, 
-//                     someCollection, 
-//                     ['innerdoc']
-//                 )
-//             ).to.eql(someCollection.doc('innerdoc'));
+        it('should return a correct reference object', function() {
+            expect(
+                concatRefPath(
+                    firestore, 
+                    someCollection, 
+                    'innerdoc'
+                )
+            ).to.eql(someCollection.doc('innerdoc'));
 
-//             expect(
-//                 concatRefPath(
-//                     firestore, 
-//                     someCollection, 
-//                     ['innerdoc', 'innercollection', 'moreinnerdoc', 'moreinnercollection']
-//                 )
-//             ).to.eql(someCollection.doc('innerdoc').collection('innercollection').doc('moreinnerdoc').collection('moreinnercollection'));
+            expect(
+                concatRefPath(
+                    firestore, 
+                    someCollection, 
+                    'innerdoc/innercollection/moreinnerdoc/moreinnercollection'
+                )
+            ).to.eql(someCollection.doc('innerdoc').collection('innercollection').doc('moreinnerdoc').collection('moreinnercollection'));
        
-//             expect(
-//                 concatRefPath(
-//                     firestore, 
-//                     someDoc, 
-//                     ['innercollection']
-//                 )
-//             ).to.eql(someDoc.collection('innercollection'));
-//         });
-//     });
-// });
+            expect(
+                concatRefPath(
+                    firestore, 
+                    someDoc, 
+                    'innercollection'
+                )
+            ).to.eql(someDoc.collection('innercollection'));
+        });
+    });
+});
 
 /* INTEGRATION TESTS */
 
 const ref = firestoreRef(firestore);
 
-describe('#firestoreRef', function() {
+// describe('#firestoreRef', function() {
+    // it('should return the original reference passed unchanged, if a reference path is not passed to concatenate', function() {
+    //     expect(
+    //         concatRefPath(
+    //             firestore, 
+    //             someCollection, 
+    //             []
+    //         )
+    //     ).to.eql(someCollection);
+    // });
     // context('both arguments invalid', function() {
     //     it('should return null', function() {
     //         should.equal(ref(null, ''), null);
@@ -96,17 +114,17 @@ describe('#firestoreRef', function() {
     //         should.equal(ref({a: 'a', b: 'b'}, {}.undef), null);
     //     });
     // });
-    context('only first argument invalid', function() {
-        it('should return null', function() {
-            // const libResult1 = ref({a: 'a', b: 'b'}, 'collectionfoo');
-            // const expectedResult1 = firestore.collection('collectionfoo');
-            // expect(libResult1).to.eql(expectedResult1);
-            const libResult2 = ref('', 'collectionfoo/docbar');
-            const expectedResult2 = firestore.collection('collectionfoo').doc('docbar');
-            expect(libResult2).to.eql(expectedResult2);
-            // expect(ref(null, 'collectionfoo/docbar')).to.eql(firestore.collection('collectionfoo').doc('docbar'));
-        });
-    });
+    // context('only first argument invalid', function() {
+    //     it('should return null', function() {
+    //         // const libResult1 = ref({a: 'a', b: 'b'}, 'collectionfoo');
+    //         // const expectedResult1 = firestore.collection('collectionfoo');
+    //         // expect(libResult1).to.eql(expectedResult1);
+    //         const libResult2 = ref('', 'collectionfoo/docbar');
+    //         const expectedResult2 = firestore.collection('collectionfoo').doc('docbar');
+    //         expect(libResult2).to.eql(expectedResult2);
+    //         // expect(ref(null, 'collectionfoo/docbar')).to.eql(firestore.collection('collectionfoo').doc('docbar'));
+    //     });
+    // });
     // context('only second argument invalid', function() {
     //     it('should return a correct firestore reference using only the first argument, if it is a valid reference string or a valid firestore reference', function() {
     //         expect(ref('collectionfoo/docbar'), {a: 'a', b: 'b'})
@@ -136,7 +154,7 @@ describe('#firestoreRef', function() {
     //                     .collection('subcollection'));
     //     });
     // });
-});
+// });
 // Null, ‘’ => null
 // Null, {}.undef => null
 // {a: ‘a’, b: ‘b’}, null => null

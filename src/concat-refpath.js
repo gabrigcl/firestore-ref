@@ -1,4 +1,4 @@
-import { parseRefPath } from './parse-path';
+import { validatePath } from './validate-path';
 
 /**
  * Transforms an array of firestore path nodes "collection/doc/..." into a firestore reference
@@ -12,7 +12,8 @@ import { parseRefPath } from './parse-path';
  */
 var concatRefPath = function(firestore, ref, path) {
     var ref_ = ref;
-    if (parseRefPath(path)) {
+    path = path.trim();
+    if (validatePath(path)) {
         var pathElms = path.split('/');
         var rest;
         if (pathElms.length > 0) {

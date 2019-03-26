@@ -1,3 +1,3 @@
-export var parseRefPath = function (path) {
+export var validatePath = function (path) {
      return /^[^\s\r\/]+(?:\/[^\s\r\/]+)*$/.test(path);
-}
+};

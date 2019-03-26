@@ -26,4 +26,4 @@ export var firestoreRef = function (firestore) {
         }
         return r;
     })(firestore);    
-}
+};
