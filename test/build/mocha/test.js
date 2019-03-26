@@ -4,6 +4,10 @@ var chai = require('chai');
 var firebase = require('firebase/app');
 require('firebase/firestore');
 
+var parseRefPath = function (path) {
+     return /^[^\s\r\/]+(?:\/[^\s\r\/]+)*$/.test(path);
+};
+
 /**
  * Transforms an array of firestore path nodes "collection/doc/..." into a firestore reference
  * and concatenates with a firestore previously created reference object (if is passed).
@@ -14,32 +18,37 @@ require('firebase/firestore');
  * @param {Array} pathElms array of firestore path segments (parsed from a string in format "collection/doc/collection/...")
  * @returns a firestore reference resulted from the concatenation of ref and pathElms arguments
  */
-var concatRefPath = function(firestore, ref, pathElms) {
+var concatRefPath = function(firestore, ref, path) {
     var ref_ = ref;
-    var rest;
-    console.log('pathElms', pathElms);
-    if (pathElms.length > 0) {
-        if (ref_) {
-            if (ref_.collection) {
+    if (parseRefPath(path)) {
+        var pathElms = path.split('/');
+        var rest;
+        if (pathElms.length > 0) {
+            if (ref_) {
+                if (ref_.collection) {
+                    rest = 0;
+                    ref_ = ref_.collection(pathElms[0]);
+                } else if(ref_.doc) {
+                    rest = 1;
+                    ref_ = ref_.doc(pathElms[0]);
+                } else {
+                    // console.error(`Invalid FirestoreReference:`, ref); obs: already verified in ref.js, never reaches here using the entire library
+                    return null;
+                }
+            } else { // ref_ expects only null
                 rest = 0;
-                ref_ = ref_.collection(pathElms[0]);
-            } else if(ref_.doc) {
-                rest = 1;
-                ref_ = ref_.doc(pathElms[0]);
-            } else {
-                ref_ = null;
+                ref_ = firestore.collection(pathElms[0]);
             }
-        } 
-        if (!ref_) {
-            rest = 0;
-            ref_ = firestore.collection(pathElms[0]);
-        }
-        for (var i = 0; i < pathElms.length; i++) {
-            if (i === 0) {
-                continue;
+            for (var i = 0; i < pathElms.length; i++) {
+                if (i === 0) {
+                    continue;
+                }
+                (i%2 === rest) ? ref_ = ref_.collection(pathElms[i]) : ref_ = ref_.doc(pathElms[i]);
             }
-            (i%2 === rest) ? ref_ = ref_.collection(pathElms[i]) : ref_ = ref_.doc(pathElms[i]);
         }
+    } else {
+        console.error(`Firestore reference "${path}" string is in invalid format!`);
+        ref_ = null;
     }
     return ref_;
 };
@@ -57,13 +66,20 @@ var concatRefPath = function(firestore, ref, pathElms) {
 var ref = function(firestore, reference, refPath) {
     var ref_;
     if (typeof reference === 'string') {
-        ref_ = concatRefPath(firestore, null, reference.split('/'));
+        ref_ = concatRefPath(firestore, null, reference);
     } else {
-        ((reference) && (reference.collection || reference.doc)) ? ref_ = reference : ref_ = null;
+        if (reference && (reference.collection || reference.doc)) { // typeof FirestoreReference
+            ref_ = reference;
+        } else { 
+            console.error(`Invalid FirestoreReference:`, ref);
+            return null;
+        }
     }
-    if (refPath) {
+    if (ref_ && refPath) {
         if (typeof refPath === 'string') {
-            ref_ = concatRefPath(firestore, ref_, refPath.split('/'));
+            ref_ = concatRefPath(firestore, ref_, refPath);
+        } else {
+            console.error(`refPath expects typeof string`, refPath); 
         }
     }
     return ref_;
@@ -189,7 +205,7 @@ describe('#firestoreRef', function() {
     //     });
     // });
     context('only first argument invalid', function() {
-        it('should return a firestore reference using only the second argument, if it is a valid reference string', function() {
+        it('should return null', function() {
             // const libResult1 = ref({a: 'a', b: 'b'}, 'collectionfoo');
             // const expectedResult1 = firestore.collection('collectionfoo');
             // expect(libResult1).to.eql(expectedResult1);
@@ -200,7 +216,7 @@ describe('#firestoreRef', function() {
         });
     });
     // context('only second argument invalid', function() {
-    //     it('should return a correct firestore reference using only the first argument, if it is a valid reference string', function() {
+    //     it('should return a correct firestore reference using only the first argument, if it is a valid reference string or a valid firestore reference', function() {
     //         expect(ref('collectionfoo/docbar'), {a: 'a', b: 'b'})
     //             .to.eql(firestore.collection('collectionfoo').doc('docbar'));
     //         expect(ref('collectionfoo'), null)

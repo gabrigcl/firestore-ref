@@ -16,11 +16,18 @@ export var ref = function(firestore, reference, refPath) {
     if (typeof reference === 'string') {
         ref_ = concatRefPath(firestore, null, reference);
     } else {
-        ((reference) && (reference.collection || reference.doc)) ? ref_ = reference : ref_ = null;
+        if (reference && (reference.collection || reference.doc)) { // typeof FirestoreReference
+            ref_ = reference;
+        } else { 
+            console.error(`Invalid FirestoreReference:`, ref);
+            return null;
+        }
     }
-    if (refPath) {
+    if (ref_ && refPath) {
         if (typeof refPath === 'string') {
             ref_ = concatRefPath(firestore, ref_, refPath);
+        } else {
+            console.error(`refPath expects typeof string`, refPath); 
         }
     }
     return ref_;

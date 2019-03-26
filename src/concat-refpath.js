@@ -1,3 +1,5 @@
+import { parseRefPath } from './parse-path';
+
 /**
  * Transforms an array of firestore path nodes "collection/doc/..." into a firestore reference
  * and concatenates with a firestore previously created reference object (if is passed).
@@ -10,30 +12,35 @@
  */
 var concatRefPath = function(firestore, ref, path) {
     var ref_ = ref;
-    var pathElms = / /.test(path); 
-    var rest;
-    if (pathElms.length > 0) {
-        if (ref_) {
-            if (ref_.collection) {
+    if (parseRefPath(path)) {
+        var pathElms = path.split('/');
+        var rest;
+        if (pathElms.length > 0) {
+            if (ref_) {
+                if (ref_.collection) {
+                    rest = 0;
+                    ref_ = ref_.collection(pathElms[0]);
+                } else if(ref_.doc) {
+                    rest = 1;
+                    ref_ = ref_.doc(pathElms[0]);
+                } else {
+                    // console.error(`Invalid FirestoreReference:`, ref); obs: already verified in ref.js, never reaches here using the entire library
+                    return null;
+                }
+            } else { // ref_ expects only null
                 rest = 0;
-                ref_ = ref_.collection(pathElms[0]);
-            } else if(ref_.doc) {
-                rest = 1;
-                ref_ = ref_.doc(pathElms[0]);
-            } else {
-                ref_ = null;
+                ref_ = firestore.collection(pathElms[0]);
             }
-        } 
-        if (!ref_) {
-            rest = 0;
-            ref_ = firestore.collection(pathElms[0]);
-        }
-        for (var i = 0; i < pathElms.length; i++) {
-            if (i === 0) {
-                continue;
+            for (var i = 0; i < pathElms.length; i++) {
+                if (i === 0) {
+                    continue;
+                }
+                (i%2 === rest) ? ref_ = ref_.collection(pathElms[i]) : ref_ = ref_.doc(pathElms[i]);
             }
-            (i%2 === rest) ? ref_ = ref_.collection(pathElms[i]) : ref_ = ref_.doc(pathElms[i]);
         }
+    } else {
+        console.error(`Firestore reference "${path}" string is in invalid format!`);
+        ref_ = null;
     }
     return ref_;
 };

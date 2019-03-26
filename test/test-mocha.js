@@ -97,7 +97,7 @@ describe('#firestoreRef', function() {
     //     });
     // });
     context('only first argument invalid', function() {
-        it('should return a firestore reference using only the second argument, if it is a valid reference string', function() {
+        it('should return null', function() {
             // const libResult1 = ref({a: 'a', b: 'b'}, 'collectionfoo');
             // const expectedResult1 = firestore.collection('collectionfoo');
             // expect(libResult1).to.eql(expectedResult1);
@@ -108,7 +108,7 @@ describe('#firestoreRef', function() {
         });
     });
     // context('only second argument invalid', function() {
-    //     it('should return a correct firestore reference using only the first argument, if it is a valid reference string', function() {
+    //     it('should return a correct firestore reference using only the first argument, if it is a valid reference string or a valid firestore reference', function() {
     //         expect(ref('collectionfoo/docbar'), {a: 'a', b: 'b'})
     //             .to.eql(firestore.collection('collectionfoo').doc('docbar'));
     //         expect(ref('collectionfoo'), null)
