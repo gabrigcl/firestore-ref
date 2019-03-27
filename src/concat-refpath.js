@@ -1,14 +1,14 @@
 import { validatePath } from './validate-path';
 
 /**
- * Transforms an array of firestore path nodes "collection/doc/..." into a firestore reference
- * and concatenates with a firestore previously created reference object (if is passed).
- * If "ref" first argument is evaluated as false, "pathElms" second argument should init with
- * "collection". Ex: somecollection/somedoc/innercollection
+ * Transforms a firestore path string "collection/doc/..." into a firestore reference
+ * and concatenates with a previously created firestore reference object (if is passed).
+ * If "ref" first argument is evaluated as false, "path" second argument should init with
+ * "collection". Ex: somecollection/somedoc/innercollection, otherwise the firestore lib will return error.
  * @param {Object} firestore firestore application object e.g: db = firebase().firestore()
  * @param {Object} ref firestore reference previously created
- * @param {Array} pathElms array of firestore path segments (parsed from a string in format "collection/doc/collection/...")
- * @returns a firestore reference resulted from the concatenation of ref and pathElms arguments
+ * @param {string} path firestore path segments (parsed from a string in format "collection/doc/collection/...")
+ * @returns a firestore reference resulted from the concatenation of ref and path arguments
  */
 var concatRefPath = function(firestore, ref, path) {
     var ref_ = ref;

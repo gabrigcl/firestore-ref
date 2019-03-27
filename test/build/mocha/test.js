@@ -9,14 +9,14 @@ var validatePath = function (path) {
 };
 
 /**
- * Transforms an array of firestore path nodes "collection/doc/..." into a firestore reference
- * and concatenates with a firestore previously created reference object (if is passed).
- * If "ref" first argument is evaluated as false, "pathElms" second argument should init with
- * "collection". Ex: somecollection/somedoc/innercollection
+ * Transforms a firestore path string "collection/doc/..." into a firestore reference
+ * and concatenates with a previously created firestore reference object (if is passed).
+ * If "ref" first argument is evaluated as false, "path" second argument should init with
+ * "collection". Ex: somecollection/somedoc/innercollection, otherwise the firestore lib will return error.
  * @param {Object} firestore firestore application object e.g: db = firebase().firestore()
  * @param {Object} ref firestore reference previously created
- * @param {Array} pathElms array of firestore path segments (parsed from a string in format "collection/doc/collection/...")
- * @returns a firestore reference resulted from the concatenation of ref and pathElms arguments
+ * @param {string} path firestore path segments (parsed from a string in format "collection/doc/collection/...")
+ * @returns a firestore reference resulted from the concatenation of ref and path arguments
  */
 var concatRefPath = function(firestore, ref, path) {
     var ref_ = ref;
@@ -52,6 +52,65 @@ var concatRefPath = function(firestore, ref, path) {
         ref_ = null;
     }
     return ref_;
+};
+
+/**
+ * Transforms a firestore reference path string "collection/doc/..." into a firestore reference object
+ * or concatenates a prevously created reference with an inner reference writen as a path string format.
+ * @param {Object} firestore firestore application object e.g: db = firebase().firestore()
+ * @param {Object} reference firestore reference previously created or a path string in format "collection/doc/..."
+ * @param {String} refPath a path string in format "collection/doc/..." (optional)
+ * @returns a firestore reference resulted from the concatenation and transformation of reference and refPath arguments
+ */
+var ref = function(firestore, reference, refPath) {
+    var ref_;
+    if (typeof reference === 'string') {
+        ref_ = concatRefPath(firestore, null, reference);
+    } else {
+        if (reference && (reference.collection || reference.doc)) { // typeof FirestoreReference
+            ref_ = reference;
+        } else { 
+            console.error(`Invalid FirestoreReference:`, reference);
+            ref_ = null;
+        }
+    }
+    if (ref_ && typeof refPath !== 'undefined') {
+        if (typeof refPath === 'string') {
+            ref_ = concatRefPath(firestore, ref_, refPath);
+        } else {
+            ref_ = null;
+            console.error(`refPath expects typeof string:`, refPath); 
+        }
+    }
+    return ref_;
+};
+
+/**
+ * Returns ref(reference, refPath) function using a firebase().firestore instance
+ * @param {Object} firestore firebase().firestore instance
+ * @returns A ref() function that concatenates a firebase reference object with 
+ * a firestore reference path string (e.g: "collection/doc/subcollection/...")
+ * and returns a merged firestore reference.
+ */
+var firestoreRef = function (firestore) {
+    return (function(fs) {
+        /**
+         * Transforms a firestore reference path string (in format "collection/doc/...") into a firestore reference object
+         * or concatenates a prevously created reference with an inner reference defined as a path string format.
+         * The "reference" first argument may be a string path (in format "collection/doc/...") or a firestore reference 
+         * object previously created. If "reference" is a string path, it should init with a "collection" reference and 
+         * refers to a top level collection. If "reference" or "refPath" are invalid ("reference" is null, undefined, not a firestore 
+         * reference object type or a string, empty string or "refPath" is not a string or empty string), 
+         * the return will be null.
+         * @param {Object} reference firestore reference previously created or a path string in format "collection/doc/..."
+         * @param {String} refPath a path string in format "collection/doc/..." (optional)
+         * @returns a firestore reference resulted from the concatenation and transformation of reference and refPath arguments
+         */
+        var r = function(reference, refPath) {
+            return ref(fs, reference, refPath);
+        };
+        return r;
+    })(firestore);    
 };
 
 const should = chai.should();
@@ -139,83 +198,38 @@ describe('#concatRefPath', function() {
     });
 });
 
-// describe('#firestoreRef', function() {
-    // it('should return the original reference passed unchanged, if a reference path is not passed to concatenate', function() {
-    //     expect(
-    //         concatRefPath(
-    //             firestore, 
-    //             someCollection, 
-    //             []
-    //         )
-    //     ).to.eql(someCollection);
-    // });
-    // context('both arguments invalid', function() {
-    //     it('should return null', function() {
-    //         should.equal(ref(null, ''), null);
-    //         should.equal(ref(null, {}.undef), null);
-    //         should.equal(ref({a: 'a', b: 'b'}, null), null);
-    //         should.equal(ref({a: 'a', b: 'b'}, {}.undef), null);
-    //     });
-    // });
-    // context('only first argument invalid', function() {
-    //     it('should return null', function() {
-    //         // const libResult1 = ref({a: 'a', b: 'b'}, 'collectionfoo');
-    //         // const expectedResult1 = firestore.collection('collectionfoo');
-    //         // expect(libResult1).to.eql(expectedResult1);
-    //         const libResult2 = ref('', 'collectionfoo/docbar');
-    //         const expectedResult2 = firestore.collection('collectionfoo').doc('docbar');
-    //         expect(libResult2).to.eql(expectedResult2);
-    //         // expect(ref(null, 'collectionfoo/docbar')).to.eql(firestore.collection('collectionfoo').doc('docbar'));
-    //     });
-    // });
-    // context('only second argument invalid', function() {
-    //     it('should return a correct firestore reference using only the first argument, if it is a valid reference string or a valid firestore reference', function() {
-    //         expect(ref('collectionfoo/docbar'), {a: 'a', b: 'b'})
-    //             .to.eql(firestore.collection('collectionfoo').doc('docbar'));
-    //         expect(ref('collectionfoo'), null)
-    //             .to.eql(firestore.collection('collectionfoo'));
-    //         expect(firestore.collection('collectionfoo').doc('bar'), '')
-    //             .to.eql(firestore.collection('collectionfoo').doc('bar'));
-    //     });
-    // });
-    // context('both arguments valid or only first argument passed and valid (ideal use)', function() {
-    //     it('should return a correct firestore reference', function() {
-    //         expect(ref('collectionfoo/docbar', 'subcollection/subcoldoc'))
-    //             .to.eql(firestore
-    //                     .collection('collectionfoo')
-    //                     .doc('docbar')
-    //                     .collection('subcollectionfoo')
-    //                     .doc('subcoldoc'));
-    //         expect(ref('collectionfoo/docbar'))
-    //             .to.eql(firestore
-    //                     .collection('collectionfoo')
-    //                     .doc('docbar'));
-    //         expect(ref(firestore.collection('collectionfoo'), 'docbar/subcollection'))
-    //             .to.eql(firestore
-    //                     .collection('collectionfoo')
-    //                     .doc('docbar')
-    //                     .collection('subcollection'));
-    //     });
-    // });
-// });
-// Null, ‘’ => null
-// Null, {}.undef => null
-// {a: ‘a’, b: ‘b’}, null => null
-// {a: ‘a’, b: ‘b’}, {}.undef => null
-// {a: ‘a’, b: ‘b’}, ‘collectionfoo’ => “collectionfoo” Type
-// {a: ‘a’, b: ‘b’}, ‘collectionfoo/docbar’ => “collectionfoo/docbar” Type
-// Null, ‘collectionfoo/docbar’ => “collectionfoo/docbar” Type
+/* INTEGRATION TESTS */
 
-// ‘collectionfoo/docbar’, ‘subcollection/subcoldoc’ => ‘collectionfoo/docbar/subcollection/subcoldoc’ Type
-// ref(‘collectionfoo/docbar’), ‘subcollection/subcoldoc’ => ‘collectionfoo/docbar/subcollection/subcoldoc’ Type
-// ref(‘collectionfoo/docbar’), {}.undef => ref(‘collectionfoo/docbar’)
-// ‘collectionfoo/docbar/collection’, null => ‘collectionfoo/docbar/collection’ Type
+const ref$1 = firestoreRef(firestore);
 
-// write security rules to allow write only for authenticated users, others can only read
-// describe('#firestoreRef fetch real firestore database result', function() {
-
-// }
-
-// export function testRef(t) => {
-    
-// }
+describe('#firestoreRef', function() {
+    context('invalid arguments', function() {
+        it('should return null', function() {
+            should.equal(ref$1(null, 'carbrands/ford'), null);
+            should.equal(ref$1({}.undef, 'carbrands'), null);
+            should.equal(ref$1({a: 'a', b: 'b'}, 'carbrands/ford/models'), null);
+            should.equal(ref$1(firestore.collection('carbrands'), null), null);
+            should.equal(ref$1(firestore.collection('carbrands'), {a: 'a', b: 'b'}), null);
+            should.equal(ref$1(firestore.collection('carbrands'), ''), null);
+            should.equal(ref$1(firestore.collection('carbrands'), '/'), null);
+            should.equal(ref$1(firestore.collection('carbrands'), '/ford'), null);
+            should.equal(ref$1(firestore.collection('carbrands'), 'ford/'), null);
+            should.equal(ref$1(firestore.collection('carbrands'), 'ford//models'), null);
+        });
+    });
+    context('valid arguments', function() {
+        it('should return the same firestore reference if only a firestore reference is passed', function() {
+            chai.expect(ref$1(firestore.collection('carbrands').doc('ford')))
+                .to.be.eql(firestore.collection('carbrands').doc('ford'));
+        });
+        it('should return the expected firestore reference', function() {
+            chai.expect(ref$1('carbrands/ford'))
+                .to.be.eql(firestore.collection('carbrands').doc('ford'));
+            chai.expect(ref$1('carbrands/ford', 'models/camaro'))
+                .to.be.eql(firestore.collection('carbrands').doc('ford').collection('models').doc('camaro'));
+            chai.expect(ref$1(firestore.collection('carbrands'), 'ford'))
+                .to.be.eql(firestore.collection('carbrands').doc('ford'));
+        });
+    });
+});
+//# sourceMappingURL=test.js.map

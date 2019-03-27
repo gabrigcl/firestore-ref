@@ -4,7 +4,8 @@ export default {
     {
         file: './test/build/mocha/test.js',
         format: 'cjs',
-        name: 'firestoreRefTest'
+        name: 'firestoreRefTest',
+        sourcemap: true
     }
   ],
   external: ['firebase']

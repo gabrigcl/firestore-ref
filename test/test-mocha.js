@@ -96,83 +96,33 @@ describe('#concatRefPath', function() {
 
 const ref = firestoreRef(firestore);
 
-// describe('#firestoreRef', function() {
-    // it('should return the original reference passed unchanged, if a reference path is not passed to concatenate', function() {
-    //     expect(
-    //         concatRefPath(
-    //             firestore, 
-    //             someCollection, 
-    //             []
-    //         )
-    //     ).to.eql(someCollection);
-    // });
-    // context('both arguments invalid', function() {
-    //     it('should return null', function() {
-    //         should.equal(ref(null, ''), null);
-    //         should.equal(ref(null, {}.undef), null);
-    //         should.equal(ref({a: 'a', b: 'b'}, null), null);
-    //         should.equal(ref({a: 'a', b: 'b'}, {}.undef), null);
-    //     });
-    // });
-    // context('only first argument invalid', function() {
-    //     it('should return null', function() {
-    //         // const libResult1 = ref({a: 'a', b: 'b'}, 'collectionfoo');
-    //         // const expectedResult1 = firestore.collection('collectionfoo');
-    //         // expect(libResult1).to.eql(expectedResult1);
-    //         const libResult2 = ref('', 'collectionfoo/docbar');
-    //         const expectedResult2 = firestore.collection('collectionfoo').doc('docbar');
-    //         expect(libResult2).to.eql(expectedResult2);
-    //         // expect(ref(null, 'collectionfoo/docbar')).to.eql(firestore.collection('collectionfoo').doc('docbar'));
-    //     });
-    // });
-    // context('only second argument invalid', function() {
-    //     it('should return a correct firestore reference using only the first argument, if it is a valid reference string or a valid firestore reference', function() {
-    //         expect(ref('collectionfoo/docbar'), {a: 'a', b: 'b'})
-    //             .to.eql(firestore.collection('collectionfoo').doc('docbar'));
-    //         expect(ref('collectionfoo'), null)
-    //             .to.eql(firestore.collection('collectionfoo'));
-    //         expect(firestore.collection('collectionfoo').doc('bar'), '')
-    //             .to.eql(firestore.collection('collectionfoo').doc('bar'));
-    //     });
-    // });
-    // context('both arguments valid or only first argument passed and valid (ideal use)', function() {
-    //     it('should return a correct firestore reference', function() {
-    //         expect(ref('collectionfoo/docbar', 'subcollection/subcoldoc'))
-    //             .to.eql(firestore
-    //                     .collection('collectionfoo')
-    //                     .doc('docbar')
-    //                     .collection('subcollectionfoo')
-    //                     .doc('subcoldoc'));
-    //         expect(ref('collectionfoo/docbar'))
-    //             .to.eql(firestore
-    //                     .collection('collectionfoo')
-    //                     .doc('docbar'));
-    //         expect(ref(firestore.collection('collectionfoo'), 'docbar/subcollection'))
-    //             .to.eql(firestore
-    //                     .collection('collectionfoo')
-    //                     .doc('docbar')
-    //                     .collection('subcollection'));
-    //     });
-    // });
-// });
-// Null, ‘’ => null
-// Null, {}.undef => null
-// {a: ‘a’, b: ‘b’}, null => null
-// {a: ‘a’, b: ‘b’}, {}.undef => null
-// {a: ‘a’, b: ‘b’}, ‘collectionfoo’ => “collectionfoo” Type
-// {a: ‘a’, b: ‘b’}, ‘collectionfoo/docbar’ => “collectionfoo/docbar” Type
-// Null, ‘collectionfoo/docbar’ => “collectionfoo/docbar” Type
-
-// ‘collectionfoo/docbar’, ‘subcollection/subcoldoc’ => ‘collectionfoo/docbar/subcollection/subcoldoc’ Type
-// ref(‘collectionfoo/docbar’), ‘subcollection/subcoldoc’ => ‘collectionfoo/docbar/subcollection/subcoldoc’ Type
-// ref(‘collectionfoo/docbar’), {}.undef => ref(‘collectionfoo/docbar’)
-// ‘collectionfoo/docbar/collection’, null => ‘collectionfoo/docbar/collection’ Type
-
-// write security rules to allow write only for authenticated users, others can only read
-// describe('#firestoreRef fetch real firestore database result', function() {
-
-// }
-
-// export function testRef(t) => {
-    
-// }
+describe('#firestoreRef', function() {
+    context('invalid arguments', function() {
+        it('should return null', function() {
+            should.equal(ref(null, 'carbrands/ford'), null);
+            should.equal(ref({}.undef, 'carbrands'), null);
+            should.equal(ref({a: 'a', b: 'b'}, 'carbrands/ford/models'), null);
+            should.equal(ref(firestore.collection('carbrands'), null), null);
+            should.equal(ref(firestore.collection('carbrands'), {a: 'a', b: 'b'}), null);
+            should.equal(ref(firestore.collection('carbrands'), ''), null);
+            should.equal(ref(firestore.collection('carbrands'), '/'), null);
+            should.equal(ref(firestore.collection('carbrands'), '/ford'), null);
+            should.equal(ref(firestore.collection('carbrands'), 'ford/'), null);
+            should.equal(ref(firestore.collection('carbrands'), 'ford//models'), null);
+        });
+    });
+    context('valid arguments', function() {
+        it('should return the same firestore reference if only a firestore reference is passed', function() {
+            expect(ref(firestore.collection('carbrands').doc('ford')))
+                .to.be.eql(firestore.collection('carbrands').doc('ford'));
+        });
+        it('should return the expected firestore reference', function() {
+            expect(ref('carbrands/ford'))
+                .to.be.eql(firestore.collection('carbrands').doc('ford'));
+            expect(ref('carbrands/ford', 'models/camaro'))
+                .to.be.eql(firestore.collection('carbrands').doc('ford').collection('models').doc('camaro'));
+            expect(ref(firestore.collection('carbrands'), 'ford'))
+                .to.be.eql(firestore.collection('carbrands').doc('ford'));
+        });
+    });
+});
