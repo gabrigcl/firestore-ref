@@ -1,6 +1,6 @@
-// firestore-ref v0.0.1 by Gabriel Castro
+// firestore-ref v0.1.0 by Gabriel Castro
 var validatePath = function (path) {
-     return /^[^\s\r\/]+(?:\/[^\s\r\/]+)*$/.test(path);
+     return /^[^\s\/]+(?:\/[^\s\/]+)*$/.test(path);
 };
 
 /**

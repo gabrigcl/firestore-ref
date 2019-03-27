@@ -1,4 +1,4 @@
-// firestore-ref v0.0.1 by Gabriel Castro
+// firestore-ref v0.1.0 by Gabriel Castro
 (function (global, factory) {
      typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
      typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -6,7 +6,7 @@
 }(this, function (exports) { 'use strict';
 
      var validatePath = function (path) {
-          return /^[^\s\r\/]+(?:\/[^\s\r\/]+)*$/.test(path);
+          return /^[^\s\/]+(?:\/[^\s\/]+)*$/.test(path);
      };
 
      /**
