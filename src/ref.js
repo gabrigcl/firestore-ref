@@ -17,7 +17,7 @@ export var ref = function(firestore, reference, refPath) {
         if (reference && (reference.collection || reference.doc)) { // typeof FirestoreReference
             ref_ = reference;
         } else { 
-            console.error(`Invalid FirestoreReference:`, reference);
+            console.error('Invalid FirestoreReference:', reference);
             ref_ = null;
         }
     }
@@ -26,7 +26,7 @@ export var ref = function(firestore, reference, refPath) {
             ref_ = concatRefPath(firestore, ref_, refPath);
         } else {
             ref_ = null;
-            console.error(`refPath expects typeof string:`, refPath); 
+            console.error('refPath expects typeof string:', refPath); 
         }
     }
     return ref_;

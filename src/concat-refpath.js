@@ -40,7 +40,7 @@ var concatRefPath = function(firestore, ref, path) {
             }
         }
     } else {
-        console.error(`Firestore reference "${path}" string is in invalid format!`);
+        console.error('Firestore reference ' + path + ' string is in invalid format!');
         ref_ = null;
     }
     return ref_;

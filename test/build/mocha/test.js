@@ -5,7 +5,7 @@ var firebase = require('firebase/app');
 require('firebase/firestore');
 
 var validatePath = function (path) {
-     return /^[^\s\r\/]+(?:\/[^\s\r\/]+)*$/.test(path);
+     return /^[^\s\/]+(?:\/[^\s\/]+)*$/.test(path);
 };
 
 /**
@@ -48,7 +48,7 @@ var concatRefPath = function(firestore, ref, path) {
             }
         }
     } else {
-        console.error(`Firestore reference "${path}" string is in invalid format!`);
+        console.error('Firestore reference ' + path + ' string is in invalid format!');
         ref_ = null;
     }
     return ref_;
@@ -70,7 +70,7 @@ var ref = function(firestore, reference, refPath) {
         if (reference && (reference.collection || reference.doc)) { // typeof FirestoreReference
             ref_ = reference;
         } else { 
-            console.error(`Invalid FirestoreReference:`, reference);
+            console.error('Invalid FirestoreReference:', reference);
             ref_ = null;
         }
     }
@@ -79,7 +79,7 @@ var ref = function(firestore, reference, refPath) {
             ref_ = concatRefPath(firestore, ref_, refPath);
         } else {
             ref_ = null;
-            console.error(`refPath expects typeof string:`, refPath); 
+            console.error('refPath expects typeof string:', refPath); 
         }
     }
     return ref_;
