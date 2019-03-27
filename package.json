@@ -12,6 +12,11 @@
     "prebuild": "npm run test",
     "build": "npm run build-umd && npm run build-browser"
   },
+  "keywords": ["firebase", "firestore", "javascript", "node.js", "browser"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gabrigcl/firestore-ref.git"
+  },
   "author": "Gabriel Castro",
   "license": "MIT",
   "module": "./dist/firestore-ref.es.js",
@@ -25,9 +30,9 @@
     "rollup-plugin-uglify": "^6.0.2"
   },
   "peerDependencies": {
-    "firebase": "^5.9.0"
+    "firebase": "^5.9.x"
   },
   "dependencies": {
-    "firebase": "^5.9.0"
+    "firebase": "^5.9.x"
   }
 }
