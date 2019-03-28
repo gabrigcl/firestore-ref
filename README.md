@@ -47,29 +47,29 @@ const ref = firestoreRef(firebase);
 // using a string path:
 
 // # collection 'carbrands'
-const carsRef = ref('carbrands');
+const carBrandsRef = ref('carbrands');
 // # doc 'carbrands/ford'
-const carsRef = ref('carbrands/ford');
+const chevroletRef = ref('carbrands/chevrolet');
 
 // concatenating a firestore reference with a string path:
 
 // # doc 'carbrands/ford'
-const carsRef = firestore.collection('carbrands');
-const camaroDocRef = ref(carsRef, 'ford');
+const carBrandsRef = firestore.collection('carbrands');
+const chevroletRef = ref(carBrandsRef, 'chevrolet');
 // or
-const carsRef = ref('carbrands');
-const camaroDocRef = ref(carsRef, 'ford');
+const carBrandsRef = ref('carbrands');
+const chevroletRef = ref(carBrandsRef, 'chevrolet');
 
 // you can create infinite deep references
 
-// # doc 'carbrands/ford/models/camaro'
-const carsRef = ref('carbrands/ford/models/camaro');
+// # doc 'carbrands/chevrolet/models/camaro'
+const camaroRef = ref('carbrands/ford/models/camaro');
 
 // and concatenate
 
 // # doc 'carbrands/ford/models/camaro/editions/3.0-turbo'
-const carsRef = ref('carbrands/ford/models/camaro');
-const wheelFeature1 = ref(carsRef, 'editions/3.0-turbo');
+const camaroModelRef = ref('carbrands/ford/models/camaro');
+const camaroTurboEditionRef = ref(camaroModelRef, 'editions/3.0-turbo');
 
 ```
 

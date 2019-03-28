@@ -2,7 +2,7 @@
   "name": "firestore-ref",
   "version": "0.1.0",
   "description": "Create firebase's firestore document/collection deep references with 'URL like' path",
-  "main": "./dist/firestore-ref.umd.js",
+  "main": "./build/firestore-ref.umd.js",
   "scripts": {
     "pretest": "rollup -c rollup-test.config.js",
     "test-mocha": "mocha ./test/build/mocha",
@@ -19,8 +19,8 @@
   },
   "author": "Gabriel Castro",
   "license": "MIT",
-  "module": "./dist/firestore-ref.es.js",
-  "browser": "./dist/firestore-ref.min.js",
+  "module": "./build/firestore-ref.es.js",
+  "browser": "./build/firestore-ref.min.js",
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^6.0.2",
