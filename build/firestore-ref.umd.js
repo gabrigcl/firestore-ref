@@ -1,4 +1,4 @@
-// firestore-ref v0.1.0 by Gabriel Castro
+// firestore-ref v0.1.2 by Gabriel Castro
 (function (global, factory) {
      typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
      typeof define === 'function' && define.amd ? define(['exports'], factory) :
