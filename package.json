@@ -1,6 +1,6 @@
 {
   "name": "firestore-ref",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Create firebase's firestore document/collection deep references with 'URL like' path",
   "main": "./build/firestore-ref.umd.js",
   "scripts": {
@@ -12,7 +12,13 @@
     "prebuild": "npm run test",
     "build": "npm run build-umd && npm run build-browser"
   },
-  "keywords": ["firebase", "firestore", "javascript", "node.js", "browser"],
+  "keywords": [
+    "firebase",
+    "firestore",
+    "javascript",
+    "node.js",
+    "browser"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/gabrigcl/firestore-ref.git"
