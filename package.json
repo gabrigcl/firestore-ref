@@ -1,15 +1,16 @@
 {
   "name": "firestore-ref",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Create firebase's firestore document/collection deep references with 'URL like' path",
   "main": "./build/firestore-ref.umd.js",
   "scripts": {
+    "lint": "eslint ./src",
     "pretest": "rollup -c rollup-test.config.js",
     "test-mocha": "mocha ./test/build/mocha",
     "test": "npm run test-mocha",
     "build-browser": "rollup --config rollup-min.config.js",
     "build-umd": "rollup -c",
-    "prebuild": "npm run test",
+    "prebuild": "npm run lint && npm run test",
     "build": "npm run build-umd && npm run build-browser"
   },
   "keywords": [
@@ -28,16 +29,16 @@
   "module": "./build/firestore-ref.es.js",
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^6.0.2",
+    "eslint": "^5.16.0",
+    "eslint-config-es5": "^0.5.0",
+    "firebase": "^5.9.3",
+    "mocha": "^6.1.2",
     "rollup": "^1.6.0",
     "rollup-plugin-banner": "^0.2.0",
     "rollup-plugin-commonjs": "^9.2.1",
     "rollup-plugin-uglify": "^6.0.2"
   },
   "peerDependencies": {
-    "firebase": "^5.9.x"
-  },
-  "dependencies": {
     "firebase": "^5.9.x"
   }
 }

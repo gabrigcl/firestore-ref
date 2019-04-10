@@ -1,0 +1,22 @@
+{
+    "extends": "eslint-config-es5",
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+        "ecmaVersion": 5,
+        "sourceType": "module"
+    },
+    "rules": {
+        "max-len": "off",
+        "require-jsdoc": "off",
+        "valid-jsdoc": "off",
+        "new-cap": "off",
+        "no-invalid-this": "off",
+        "indent": "off",
+        "func-names": "off",
+        "no-lonely-if": "off",
+        "no-console": "off"
+    }
+}

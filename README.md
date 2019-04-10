@@ -5,7 +5,7 @@ Creates a Firebase Cloud Firestore doc or collection reference using a "URL like
 ## Installation and use
 
 ```bash
-npm install firestore-ref
+npm install --save firestore-ref
 ```
 
 1. <strong>Import the lib</strong>
@@ -37,38 +37,37 @@ const config = {
 
 const firestore = firebase.initializeApp(config).firestore();
 
-const ref = firestoreRef(firebase);
+const ref = firestoreRef(firestore);
 ```
 
 3. <strong>Create collection or doc references</strong>
 
 ```javascript
 
-// using a string path:
+// 1. Using a string path:
 
-// # collection 'carbrands'
+// # collection firestore.collection('carbrands')
 const carBrandsRef = ref('carbrands');
-// # doc 'carbrands/ford'
+// # doc firestore.collection('carbrands').doc('chevrolet')
 const chevroletRef = ref('carbrands/chevrolet');
 
-// concatenating a firestore reference with a string path:
+// 2. Concatenating a prevously created firestore reference with a string path:
 
-// # doc 'carbrands/ford'
+// # doc firestore.collection('carbrands').doc('chevrolet')
 const carBrandsRef = firestore.collection('carbrands');
 const chevroletRef = ref(carBrandsRef, 'chevrolet');
-// or
+// the same example using firestoreRef to create a firestore reference and concatenating
 const carBrandsRef = ref('carbrands');
 const chevroletRef = ref(carBrandsRef, 'chevrolet');
 
-// you can create infinite deep references
+// 3. You can create deep references until the level Firebase permits
 
-// # doc 'carbrands/chevrolet/models/camaro'
-const camaroRef = ref('carbrands/ford/models/camaro');
-
-// and concatenate
-
-// # doc 'carbrands/ford/models/camaro/editions/3.0-turbo'
-const camaroModelRef = ref('carbrands/ford/models/camaro');
+// # doc firestore.collection('carbrands').doc('chevrolet').collection('models').doc('camaro')
+const camaroRef = ref('carbrands/chevrolet/models/camaro');
+// # doc firestore.collection('carbrands').doc('chevrolet').collection('models').doc('camaro').collection('editions').doc('3.0-turbo')
+const camaroRef = ref('carbrands/chevrolet/models/camaro/editions/3.0-turbo');
+// the above example using firestoreRef to create a firestore reference and concatenating
+const camaroModelRef = ref('carbrands/chevrolet/models/camaro');
 const camaroTurboEditionRef = ref(camaroModelRef, 'editions/3.0-turbo');
 
 ```

@@ -12,16 +12,16 @@ import { validatePath } from './validate-path';
  */
 var concatRefPath = function(firestore, ref, path) {
     var ref_ = ref;
-    path = path.trim();
-    if (validatePath(path)) {
-        var pathElms = path.split('/');
+    var path_ = path.trim();
+    if (validatePath(path_)) {
+        var pathElms = path_.split('/');
         var rest;
         if (pathElms.length > 0) {
             if (ref_) {
                 if (ref_.collection) {
                     rest = 0;
                     ref_ = ref_.collection(pathElms[0]);
-                } else if(ref_.doc) {
+                } else if (ref_.doc) {
                     rest = 1;
                     ref_ = ref_.doc(pathElms[0]);
                 } else {
@@ -36,11 +36,11 @@ var concatRefPath = function(firestore, ref, path) {
                 if (i === 0) {
                     continue;
                 }
-                (i%2 === rest) ? ref_ = ref_.collection(pathElms[i]) : ref_ = ref_.doc(pathElms[i]);
+                (i % 2 === rest) ? ref_ = ref_.collection(pathElms[i]) : ref_ = ref_.doc(pathElms[i]);
             }
         }
     } else {
-        console.error('Firestore reference ' + path + ' string is in invalid format!');
+        console.error('Firestore reference ' + path_ + ' string is in invalid format!');
         ref_ = null;
     }
     return ref_;

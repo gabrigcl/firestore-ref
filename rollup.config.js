@@ -7,12 +7,7 @@ export default {
         file: './build/firestore-ref.umd.js',
         format: 'umd',
         name: 'firestoreRef'
-    },
-    {
-        file: './build/firestore-ref.es.js',
-        format: 'esm',
-        name: 'firestoreRef'
-    },
+    }
   ],
   plugins: [
     banner('firestore-ref v<%= pkg.version %> by <%= pkg.author %>'),

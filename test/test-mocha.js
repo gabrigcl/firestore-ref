@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import { expect, should as shd } from 'chai';
 
 import { validatePath } from '../src/validate-path';
